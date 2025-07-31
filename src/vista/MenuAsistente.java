@@ -8,17 +8,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import vista.Home;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MenuAsistente extends JFrame {
     private JPanel panelPrincipa;
+    private JButton registrarCitaButton;
     private JButton verCitasButton;
     private JButton eliminarCitasButton;
     private JButton cerrarSesionButton;
     private JPanel panelSecundario;
     private JPanel PanelBotones;
     private JPanel PanelContenido;
+
 
     public MenuAsistente() {
         setTitle("SIVET - Panel de Asistente Veterinario");
@@ -28,17 +28,32 @@ public class MenuAsistente extends JFrame {
         setLocationRelativeTo(null);
 
         configurarEventos();
-        inicializarDashboard();
 
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // para maximizar full screen
         setVisible(true);
     }
 
     private void configurarEventos() {
-        // Ver todas las citas - SOLO ESTE EVENT LISTENER
+        // Registrar nueva cita
+        registrarCitaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                registrarNuevaCita();
+            }
+
+        });
         verCitasButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                verCitas(); // Este método abre la tabla con las citas
+                verCitas();
+            }
+        });
+
+        // Ver todas las citas
+        verCitasButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                verTodasLasCitas();
             }
         });
 
@@ -58,6 +73,160 @@ public class MenuAsistente extends JFrame {
             }
         });
     }
+
+    private void registrarNuevaCita() {
+        // Mostrar formulario para registrar nueva cita
+        JPanel panel = new JPanel(new java.awt.GridLayout(5, 2, 5, 5));
+
+        JTextField propietarioField = new JTextField();
+        JTextField mascotaField = new JTextField();
+        JTextField fechaField = new JTextField();
+        JTextField horaField = new JTextField();
+        JTextField motivoField = new JTextField();
+
+        panel.add(new JLabel("Propietario:"));
+        panel.add(propietarioField);
+        panel.add(new JLabel("Mascota:"));
+        panel.add(mascotaField);
+        panel.add(new JLabel("Fecha (dd/mm/yyyy):"));
+        panel.add(fechaField);
+        panel.add(new JLabel("Hora:"));
+        panel.add(horaField);
+        panel.add(new JLabel("Motivo:"));
+        panel.add(motivoField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel,
+                "Registrar Nueva Cita", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                String propietario = propietarioField.getText().trim();
+                String mascota = mascotaField.getText().trim();
+                String hora = horaField.getText().trim();
+                String motivo = motivoField.getText().trim();
+
+                if (propietario.isEmpty() || mascota.isEmpty() || hora.isEmpty() || motivo.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Por simplicidad, usar fecha actual
+                java.util.Date fecha = new java.util.Date();
+
+                Cita nuevaCita = new Cita(propietario, mascota, fecha, hora, motivo);
+                Home.getCitas().add(nuevaCita);
+
+                JOptionPane.showMessageDialog(this,
+                        "¡Cita registrada exitosamente!\n\n" + nuevaCita.toString(),
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al registrar la cita: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void verTodasLasCitas() {
+        ArrayList<Cita> citas = Home.getCitas();
+
+        if (citas.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No hay citas registradas en el sistema.",
+                    "Sin citas",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append("=== CITAS REGISTRADAS ===\n\n");
+
+            for (int i = 0; i < citas.size(); i++) {
+                sb.append((i + 1) + ". " + citas.get(i).toString());
+                sb.append("\n" + "=".repeat(40) + "\n");
+            }
+
+            JTextArea textArea = new JTextArea(sb.toString());
+            textArea.setEditable(false);
+            textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setPreferredSize(new java.awt.Dimension(600, 400));
+
+            JOptionPane.showMessageDialog(this, scrollPane,
+                    "Lista de Citas", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void eliminarCita() {
+        ArrayList<Cita> citas = Home.getCitas();
+
+        if (citas.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No hay citas para eliminar.",
+                    "Sin citas",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Crear lista de opciones para seleccionar
+        String[] opciones = new String[citas.size()];
+        for (int i = 0; i < citas.size(); i++) {
+            Cita cita = citas.get(i);
+            opciones[i] = "ID:" + cita.getId() + " - " + cita.getPropietario() +
+                    " (" + cita.getMascota() + ") - " + cita.getFechaFormateada();
+        }
+
+        String seleccion = (String) JOptionPane.showInputDialog(this,
+                "Seleccione la cita a eliminar:",
+                "Eliminar Cita",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]);
+
+        if (seleccion != null) {
+            // Encontrar la cita seleccionada
+            int idSeleccionado = Integer.parseInt(seleccion.split(" - ")[0].replace("ID:", ""));
+
+            Cita citaAEliminar = null;
+            for (Cita cita : citas) {
+                if (cita.getId() == idSeleccionado) {
+                    citaAEliminar = cita;
+                    break;
+                }
+            }
+
+            if (citaAEliminar != null) {
+                int confirmacion = JOptionPane.showConfirmDialog(this,
+                        "¿Está seguro de eliminar esta cita?\n\n" + citaAEliminar.toString(),
+                        "Confirmar eliminación",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    citas.remove(citaAEliminar);
+                    JOptionPane.showMessageDialog(this,
+                            "Cita eliminada exitosamente.",
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }
+    }
+
+    private void cerrarSesion() {
+        int respuesta = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro que desea cerrar sesión?",
+                "Confirmar cierre de sesión",
+                JOptionPane.YES_NO_OPTION);
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            this.dispose();
+            new Home();
+        }
+    }
+
+    // En tu clase MenuAsistente.java, agrega este método para el botón "Ver Citas":
 
     private void verCitas() {
         // Obtener las citas desde Home
@@ -172,284 +341,4 @@ public class MenuAsistente extends JFrame {
         ventanaCitas.setVisible(true);
     }
 
-    private void eliminarCita() {
-        ArrayList<Cita> citas = Home.getCitas();
-
-        if (citas.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "No hay citas para eliminar.",
-                    "Sin citas",
-                    JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        // Crear lista de opciones para seleccionar
-        String[] opciones = new String[citas.size()];
-        for (int i = 0; i < citas.size(); i++) {
-            Cita cita = citas.get(i);
-            opciones[i] = "ID:" + cita.getId() + " - " + cita.getPropietario() +
-                    " (" + cita.getMascota() + ") - " + cita.getFechaFormateada();
-        }
-
-        String seleccion = (String) JOptionPane.showInputDialog(this,
-                "Seleccione la cita a eliminar:",
-                "Eliminar Cita",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]);
-
-        if (seleccion != null) {
-            // Encontrar la cita seleccionada
-            int idSeleccionado = Integer.parseInt(seleccion.split(" - ")[0].replace("ID:", ""));
-
-            Cita citaAEliminar = null;
-            for (Cita cita : citas) {
-                if (cita.getId() == idSeleccionado) {
-                    citaAEliminar = cita;
-                    break;
-                }
-            }
-
-            if (citaAEliminar != null) {
-                int confirmacion = JOptionPane.showConfirmDialog(this,
-                        "¿Está seguro de eliminar esta cita?\n\n" + citaAEliminar.toString(),
-                        "Confirmar eliminación",
-                        JOptionPane.YES_NO_OPTION);
-
-                if (confirmacion == JOptionPane.YES_OPTION) {
-                    citas.remove(citaAEliminar);
-                    JOptionPane.showMessageDialog(this,
-                            "Cita eliminada exitosamente.",
-                            "Éxito",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        }
-    }
-
-    private void cerrarSesion() {
-        int respuesta = JOptionPane.showConfirmDialog(this,
-                "¿Está seguro que desea cerrar sesión?",
-                "Confirmar cierre de sesión",
-                JOptionPane.YES_NO_OPTION);
-
-        if (respuesta == JOptionPane.YES_OPTION) {
-            this.dispose();
-            new Home();
-        }
-    }
-
-    // Agregar estos métodos a tu clase MenuAsistente.java
-
-    private void inicializarDashboard() {
-        // Crear el panel principal del dashboard
-        JPanel dashboardPanel = new JPanel();
-        dashboardPanel.setLayout(new BoxLayout(dashboardPanel, BoxLayout.Y_AXIS));
-        dashboardPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(),
-                "PANEL DE CONTROL - ASISTENTE",
-                0, 0,
-                new Font("Arial", Font.BOLD, 14)
-        ));
-        dashboardPanel.setBackground(new Color(230, 240, 250));
-
-        // Título del dashboard
-        JLabel tituloDashboard = new JLabel("📊 ESTADÍSTICAS DEL DÍA", JLabel.CENTER);
-        tituloDashboard.setFont(new Font("Arial", Font.BOLD, 16));
-        tituloDashboard.setForeground(new Color(25, 100, 150));
-        tituloDashboard.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // Panel de estadísticas
-        JPanel estadisticasPanel = crearPanelEstadisticas();
-
-        // Panel de próximas citas
-        JPanel proximasCitasPanel = crearPanelProximasCitas();
-
-        // Panel de acciones rápidas
-        JPanel accionesPanel = crearPanelAccionesRapidas();
-
-        // Agregar componentes al dashboard
-        dashboardPanel.add(Box.createVerticalStrut(10));
-        dashboardPanel.add(tituloDashboard);
-        dashboardPanel.add(Box.createVerticalStrut(15));
-        dashboardPanel.add(estadisticasPanel);
-        dashboardPanel.add(Box.createVerticalStrut(10));
-        dashboardPanel.add(proximasCitasPanel);
-        dashboardPanel.add(Box.createVerticalStrut(10));
-        dashboardPanel.add(accionesPanel);
-        dashboardPanel.add(Box.createVerticalGlue());
-
-        // Agregar el dashboard al PanelContenido (lado derecho)
-        if (PanelContenido != null) {
-            PanelContenido.removeAll();
-            PanelContenido.setLayout(new BorderLayout());
-            PanelContenido.add(dashboardPanel, BorderLayout.CENTER);
-            PanelContenido.revalidate();
-            PanelContenido.repaint();
-        }
-    }
-
-    private JPanel crearPanelEstadisticas() {
-        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 8));
-        panel.setBorder(BorderFactory.createTitledBorder("📈 Estadísticas Rápidas"));
-        panel.setBackground(Color.WHITE);
-
-        // Obtener estadísticas
-        ArrayList<Cita> todasCitas = Home.getCitas();
-        int totalCitas = todasCitas.size();
-        int citasHoy = contarCitasHoy(todasCitas);
-        int citasPendientes = contarCitasPorEstado(todasCitas, "Agendada");
-        int citasCompletadas = contarCitasPorEstado(todasCitas, "Completada");
-
-        // Crear etiquetas con estadísticas
-        JLabel lblTotalCitas = new JLabel("📋 Total de Citas:");
-        JLabel valueTotalCitas = new JLabel(String.valueOf(totalCitas));
-        valueTotalCitas.setFont(new Font("Arial", Font.BOLD, 14));
-        valueTotalCitas.setForeground(new Color(50, 120, 200));
-
-        JLabel lblCitasHoy = new JLabel("📅 Citas de Hoy:");
-        JLabel valueCitasHoy = new JLabel(String.valueOf(citasHoy));
-        valueCitasHoy.setFont(new Font("Arial", Font.BOLD, 14));
-        valueCitasHoy.setForeground(new Color(255, 140, 0));
-
-        JLabel lblPendientes = new JLabel("⏳ Pendientes:");
-        JLabel valuePendientes = new JLabel(String.valueOf(citasPendientes));
-        valuePendientes.setFont(new Font("Arial", Font.BOLD, 14));
-        valuePendientes.setForeground(new Color(220, 20, 60));
-
-        // Agregar componentes
-        panel.add(lblTotalCitas);
-        panel.add(valueTotalCitas);
-        panel.add(lblCitasHoy);
-        panel.add(valueCitasHoy);
-        panel.add(lblPendientes);
-        panel.add(valuePendientes);
-
-        return panel;
-    }
-
-    private JPanel crearPanelProximasCitas() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("🕒 Próximas Citas"));
-        panel.setBackground(Color.WHITE);
-
-        // Obtener próximas 3 citas del día de hoy
-        ArrayList<Cita> proximasCitas = obtenerProximasCitas(3);
-
-        if (proximasCitas.isEmpty()) {
-            JLabel sinCitas = new JLabel("No hay citas programadas para hoy", JLabel.CENTER);
-            sinCitas.setForeground(Color.GRAY);
-            panel.add(sinCitas, BorderLayout.CENTER);
-        } else {
-            JPanel listaCitas = new JPanel();
-            listaCitas.setLayout(new BoxLayout(listaCitas, BoxLayout.Y_AXIS));
-            listaCitas.setBackground(Color.WHITE);
-
-            for (Cita cita : proximasCitas) {
-                JPanel citaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                citaPanel.setBackground(new Color(245, 255, 245));
-                citaPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 230, 200)));
-
-                String textoCita = String.format("🐾 %s - %s (%s)",
-                        cita.getHora(),
-                        cita.getPropietario(),
-                        cita.getMascota());
-
-                JLabel labelCita = new JLabel(textoCita);
-                labelCita.setFont(new Font("Arial", Font.PLAIN, 11));
-                citaPanel.add(labelCita);
-
-                listaCitas.add(citaPanel);
-                listaCitas.add(Box.createVerticalStrut(3));
-            }
-
-            JScrollPane scrollPane = new JScrollPane(listaCitas);
-            scrollPane.setPreferredSize(new Dimension(0, 120));
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            panel.add(scrollPane, BorderLayout.CENTER);
-        }
-
-        return panel;
-    }
-
-    private JPanel crearPanelAccionesRapidas() {
-        JPanel panel = new JPanel(new GridLayout(2, 1, 5, 5));
-        panel.setBorder(BorderFactory.createTitledBorder("⚡ Acciones Rápidas"));
-        panel.setBackground(Color.WHITE);
-
-        JButton btnActualizarDatos = new JButton("🔄 Actualizar Dashboard");
-        btnActualizarDatos.setBackground(new Color(70, 130, 180));
-        btnActualizarDatos.setForeground(Color.WHITE);
-        btnActualizarDatos.setFocusPainted(false);
-
-        JButton btnVerTodasCitas = new JButton("📋 Ver Todas las Citas");
-        btnVerTodasCitas.setBackground(new Color(60, 179, 113));
-        btnVerTodasCitas.setForeground(Color.WHITE);
-        btnVerTodasCitas.setFocusPainted(false);
-
-        // Eventos para los botones
-        btnActualizarDatos.addActionListener(e -> {
-            inicializarDashboard(); // Recargar el dashboard
-            JOptionPane.showMessageDialog(this, "Dashboard actualizado correctamente",
-                    "Actualizado", JOptionPane.INFORMATION_MESSAGE);
-        });
-
-        btnVerTodasCitas.addActionListener(e -> verCitas());
-
-        panel.add(btnActualizarDatos);
-        panel.add(btnVerTodasCitas);
-
-        return panel;
-    }
-
-    // Métodos auxiliares para las estadísticas
-    private int contarCitasHoy(ArrayList<Cita> citas) {
-        java.util.Date hoy = new java.util.Date();
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-        String fechaHoy = sdf.format(hoy);
-
-        int contador = 0;
-        for (Cita cita : citas) {
-            if (cita.getFechaFormateada().equals(fechaHoy)) {
-                contador++;
-            }
-        }
-        return contador;
-    }
-
-    private int contarCitasPorEstado(ArrayList<Cita> citas, String estado) {
-        int contador = 0;
-        for (Cita cita : citas) {
-            if (cita.getEstado().equals(estado)) {
-                contador++;
-            }
-        }
-        return contador;
-    }
-
-    private ArrayList<Cita> obtenerProximasCitas(int limite) {
-        ArrayList<Cita> proximasCitas = new ArrayList<>();
-        java.util.Date hoy = new java.util.Date();
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-        String fechaHoy = sdf.format(hoy);
-
-        // Filtrar citas de hoy y ordenar por hora
-        for (Cita cita : Home.getCitas()) {
-            if (cita.getFechaFormateada().equals(fechaHoy) &&
-                    cita.getEstado().equals("Agendada")) {
-                proximasCitas.add(cita);
-            }
-        }
-
-        // Ordenar por hora (simple ordenamiento)
-        proximasCitas.sort((c1, c2) -> c1.getHora().compareTo(c2.getHora()));
-
-        // Limitar el número de resultados
-        if (proximasCitas.size() > limite) {
-            return new ArrayList<>(proximasCitas.subList(0, limite));
-        }
-
-        return proximasCitas;
-    }
 }

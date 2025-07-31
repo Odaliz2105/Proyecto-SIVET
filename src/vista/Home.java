@@ -22,11 +22,11 @@ public class Home extends JFrame {
     private JButton iniciarSesionButton;
     private JComboBox<String> comboBoxUsuario;
     private JPasswordField contraseña;
-    private JButton limpiarButton;
     private JPanel PanelSecundario;
     private JPanel panelContacto;
     private JPanel panelServicios;
     private JPanel PanelPie;
+    private JButton crearUsuarioButton;
     private JDateChooser dateChooser; // Para el calendario (JCalendar library)
 
     // Lista estática para almacenar citas (temporal, después será BD)
@@ -42,7 +42,42 @@ public class Home extends JFrame {
         inicializarComponentes();
         configurarEventos();
 
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // para maximizar full screen
         setVisible(true);
+
+
+        crearUsuarioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String rol = (String) comboBoxUsuario.getSelectedItem();
+                String nuevaContraseña = new String(contraseña.getPassword());
+
+                if (rol == null || rol.equals("Seleccionar rol")) {
+                    JOptionPane.showMessageDialog(panelHome,
+                            "Por favor selecciona un rol para el nuevo usuario.",
+                            "Campo requerido", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                if (nuevaContraseña.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(panelHome,
+                            "Por favor ingresa una contraseña para el nuevo usuario.",
+                            "Campo requerido", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                // Aquí puedes almacenar temporalmente el nuevo usuario en una lista, base de datos, o imprimirlo.
+                // Por ahora, solo mostramos un mensaje de confirmación:
+                JOptionPane.showMessageDialog(panelHome,
+                        "¡Usuario creado exitosamente!\n\nRol: " + rol + "\nContraseña: " + nuevaContraseña,
+                        "Usuario creado", JOptionPane.INFORMATION_MESSAGE);
+
+                // Limpiar campos
+                comboBoxUsuario.setSelectedIndex(0);
+                contraseña.setText("");
+            }
+        });
+
     }
 
     private void inicializarComponentes() {
@@ -73,13 +108,15 @@ public class Home extends JFrame {
             }
         });
 
-        // Evento para limpiar campos de cita
+        /*
+        *  // Evento para limpiar campos de cita
         limpiarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarCamposCita();
             }
         });
+        * */
 
         // Evento para iniciar sesión
         iniciarSesionButton.addActionListener(new ActionListener() {
@@ -193,7 +230,7 @@ public class Home extends JFrame {
             if (usuario.equals("Administrador") && password.equals("admin123")) {
                 credencialesCorrectas = true;
                 this.dispose();
-                new MenuAdmin();
+                new MenuAdmin();// Abrir ventana del menú administrador
                 JOptionPane.showMessageDialog(null,
                         "¡Bienvenido Administrador!",
                         "Inicio de sesión exitoso",
@@ -202,7 +239,7 @@ public class Home extends JFrame {
             } else if (usuario.equals("Asistente Veterinario") && password.equals("asistente123")) {
                 credencialesCorrectas = true;
                 this.dispose();
-                new MenuAsistente();
+                new MenuAsistente(); // Abrir ventana del menú asistente
                 JOptionPane.showMessageDialog(null,
                         "¡Bienvenido Asistente Veterinario!",
                         "Inicio de sesión exitoso",
@@ -244,4 +281,5 @@ public class Home extends JFrame {
     public static ArrayList<Cita> getCitas() {
         return listaCitas;
     }
+
 }
