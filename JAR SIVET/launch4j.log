@@ -1,0 +1,42 @@
+
+
+Version:	3.50
+CmdLine:	C:\Users\Odaliz Aracely\Documents\JAR SIVET\Proyecto SIVET.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	C:\Users\Odaliz Aracely\Documents\JAR SIVET\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	1.008.000
+Java max ver:	
+Substitute:	JAVA_HOME = 
+Substitute:	PATH = C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Python 3.12;C:\Users\Odaliz Aracely\AppData\Local\Programs\Python\Python312\Scripts\;C:\Program Files\Python312;C:\Program Files\Python312\Scripts;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\Odaliz Aracely\AppData\Local\Microsoft\WindowsApps;C:\Users\Odaliz Aracely\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.1\bin;;C:\Program Files\Java\jdk-24\bin
+JRE paths:	;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Git\cmd;C:\Program Files\OpenSSL-Win64\bin;C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Python 3.12;C:\Users\Odaliz Aracely\AppData\Local\Programs\Python\Python312\Scripts\;C:\Program Files\Python312;C:\Program Files\Python312\Scripts;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\Odaliz Aracely\AppData\Local\Microsoft\WindowsApps;C:\Users\Odaliz Aracely\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.1\bin;;C:\Program Files\Java\jdk-24\bin
+Check launcher:	C:\Program Files\Common Files\Oracle\Java\javapath\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files (x86)\Intel\iCLS Client\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Intel\iCLS Client\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\system32\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\Wbem\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\WindowsPowerShell\v1.0\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\OpenSSH\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Intel\Intel(R) Management Engine Components\DAL\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Intel\Intel(R) Management Engine Components\IPT\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Git\cmd\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\OpenSSL-Win64\bin\javaw.exe (not found)
+Check launcher:	C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Python 3.12\bin\javaw.exe (not found)
+Check launcher:	C:\Users\Odaliz Aracely\AppData\Local\Programs\Python\Python312\Scripts\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Python312\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Python312\Scripts\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\MySQL\MySQL Shell 8.0\bin\bin\javaw.exe (not found)
+Check launcher:	C:\Users\Odaliz Aracely\AppData\Local\Microsoft\WindowsApps\bin\javaw.exe (not found)
+Check launcher:	C:\Users\Odaliz Aracely\AppData\Local\Programs\Microsoft VS Code\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.1\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Java\jdk-24\bin\javaw.exe (OK)
+Version string: 1.024.000_002 / 64-Bit (OK)
+Launcher:	C:\Program Files\Java\jdk-24\bin\javaw.exe
+Launcher args:	-jar "C:\Users\Odaliz Aracely\Documents\JAR SIVET\Proyecto SIVET.exe"
+Args length:	69/32768 chars
+Exit code:	0
