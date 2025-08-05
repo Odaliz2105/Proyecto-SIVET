@@ -1,3 +1,4 @@
+
 package dao;
 
 import com.mongodb.client.MongoCollection;
@@ -6,6 +7,14 @@ import com.mongodb.client.model.Filters;
 import modelo.Cita;
 import org.bson.Document;
 
+/**
+ * Clase DAO para generar reportes y estadísticas del sistema veterinario.
+ * Proporciona métodos para obtener información analítica y reportes.
+ *
+ * @author Odaliz Aracely
+ * @version 1.0
+ * @since 2024
+ */
 public class ReporteDAO {
 
     private final MongoCollection<Document> coleccion;

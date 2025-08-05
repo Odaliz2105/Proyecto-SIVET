@@ -1,3 +1,4 @@
+
 package vista;
 
 import dao.ReporteDAO;
@@ -5,13 +6,22 @@ import dao.StockDAO;
 import modelo.Cita;
 import org.bson.Document;
 
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
+/**
+ * Ventana del menú principal para usuarios administradores.
+ * Proporciona acceso a funcionalidades administrativas como
+ * generación de reportes y control de inventario.
+ *
+ * @author Odaliz Aracely
+ * @version 1.0
+ * @since 2024
+ */
 public class MenuAdmin extends JFrame {
     private JPanel PanelPrincipal;
     private JPanel PanelBotones;

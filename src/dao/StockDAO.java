@@ -8,6 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
+/**
+ * Acceso a datos del inventario (stock) de insumos veterinarios.
+ * Permite registrar, modificar y consultar productos disponibles en SIVET.
+ * Muy útil para la gestión del asistente veterinario.
+ *
+ * @author Odaliz
+ * @version 1.0
+ */
 
 public class StockDAO {
     private final MongoCollection<Document> coleccion;

@@ -1,9 +1,16 @@
-package modelo;
+/**
+
+ * Clase modelo que representa la información de login y sesión.
+        * Gestiona las credenciales de acceso al sistema.
+ *
+         * @author Odaliz Aracely
+ * @version 1.0
+        * @since 2024
+        */
 
 import dao.UsuarioDAO;
 import vista.MenuAdmin;
 import vista.MenuAsistente;
-
 import javax.swing.*;
 import java.awt.*;
 import org.bson.Document;

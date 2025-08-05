@@ -11,6 +11,15 @@ import java.util.Date;
 import com.toedter.calendar.JDateChooser;
 import modelo.Usuario;
 
+/**
+ * Página principal del sistema (pantalla de bienvenida).
+ * Puede mostrar acceso público a servicios ofrecidos por la veterinaria sin necesidad de logueo.
+ * Es la primera interfaz visible antes del login.
+ *
+ * @author Odaliz
+ * @version 1.0
+ */
+
 public class Home extends JFrame {
     private JPanel panelHome;
     private JTabbedPane tabbedPane1;

@@ -1,3 +1,4 @@
+
 package vista;
 
 import com.toedter.calendar.JDateChooser;
@@ -27,7 +28,15 @@ public class MenuAsistente extends JFrame {
     private JButton verMascotaButton;
 
     private CitaDAO citaDAO;
-
+    /**
+     * Ventana del menú principal para usuarios asistentes.
+     * Proporciona acceso a funcionalidades  como
+     * eliminacion, creacion y registro de citas.
+     *
+     * @author Odaliz Aracely
+     * @version 1.0
+     * @since 2024
+     */
     public MenuAsistente() {
         citaDAO = new CitaDAO();
 

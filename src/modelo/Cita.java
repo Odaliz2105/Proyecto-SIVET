@@ -1,8 +1,16 @@
+
 package modelo;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-
+/**
+ * Clase modelo que representa una cita médica veterinaria.
+ * Encapsula toda la información relacionada con las citas programadas.
+ *
+ * @author Odaliz Aracely
+ * @version 1.0
+ * @since 2024
+ */
 public class Cita {
     private String id; // Cambiado de int a String
     private String propietario;

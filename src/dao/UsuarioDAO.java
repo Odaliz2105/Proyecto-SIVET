@@ -7,6 +7,14 @@ import modelo.Usuario;
 import org.bson.Document;
 
 import static com.mongodb.client.model.Filters.*;
+/**
+ * Acceso a datos para la entidad Usuario.
+ * Gestiona la verificación de credenciales, registro y roles de usuarios.
+ * Interactúa con la base de datos para validar inicio de sesión.
+ *
+ * @author Odaliz
+ * @version 1.0
+ */
 
 public class UsuarioDAO {
 

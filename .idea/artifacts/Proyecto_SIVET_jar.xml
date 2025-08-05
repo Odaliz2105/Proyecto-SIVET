@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Proyecto SIVET:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Proyecto_SIVET_jar</output-path>
+    <root id="archive" name="Proyecto SIVET.jar">
+      <element id="module-output" name="Proyecto SIVET" />
+      <element id="extracted-dir" path="D:/Descargas/bson-4.11.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/Descargas/jcalendar-1.4 (1).jar" path-in-jar="/" />
+      <element id="library" level="project" name="api" />
+      <element id="library" level="project" name="mongo-java-driver-3.11.2" />
+      <element id="extracted-dir" path="D:/Descargas/mongodb-driver-core-4.11.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="D:/Descargas/mongodb-driver-sync-4.11.4.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

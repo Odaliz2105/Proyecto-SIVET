@@ -1,8 +1,18 @@
+
 package dao;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+/**
+ * Clase para gestionar la conexión a la base de datos MongoDB Atlas.
+ * Implementa el patrón Singleton para garantizar una única instancia
+ * de conexión durante la ejecución de la aplicación.
+ *
+ * @author Odaliz Aracely
+ * @version 1.0
+ * @since 2024
+ */
 
 public class Conexion {
 

@@ -1,4 +1,12 @@
 package modelo;
+/**
+ * Representa un usuario registrado en el sistema.
+ * Puede ser un Administrador o Asistente Veterinario.
+ * Contiene campos como nombre de usuario, contraseña, y rol.
+ *
+ * @author Odaliz
+ * @version 1.0
+ */
 
 public class Usuario {
     private String nombre;

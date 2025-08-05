@@ -1,3 +1,4 @@
+
 package dao;
 
 import com.mongodb.client.*;
@@ -7,7 +8,14 @@ import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Clase DAO para gestionar las operaciones CRUD de mascotas.
+ * Maneja el registro, consulta y actualización de información de mascotas.
+ *
+ * @author Odaliz Aracely
+ * @version 1.0
+ * @since 2024
+ */
 public class MascotaDAO {
     private MongoCollection<Document> coleccion;
 

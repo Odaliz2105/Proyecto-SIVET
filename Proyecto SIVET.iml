@@ -19,5 +19,8 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="mongo-java-driver-3.11.2" level="project" />
+    <orderEntry type="library" name="mongodb-driver-sync-4.11.4" level="project" />
+    <orderEntry type="library" name="bson-4.11.4" level="project" />
+    <orderEntry type="library" name="mongodb-driver-core-4.11.4" level="project" />
   </component>
 </module>
