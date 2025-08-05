@@ -1,6 +1,9 @@
 package vista;
 
+import dao.ReporteDAO;
+import dao.StockDAO;
 import modelo.Cita;
+import org.bson.Document;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -67,6 +70,7 @@ public class MenuAdmin extends JFrame {
             return;
         }
 
+
         // Crear ventana de reportes
         JFrame ventanaReportes = new JFrame("Reporte de Citas Agendadas");
         ventanaReportes.setSize(800, 600);
@@ -81,6 +85,14 @@ public class MenuAdmin extends JFrame {
                 return false; // Tabla no editable
             }
         };
+
+            // Guardar también en MongoDB (colección "reportes")
+        ReporteDAO reporteDAO = new ReporteDAO();
+        for (Cita cita : citas) {
+            reporteDAO.guardarCitaComoReporte(cita);  // ← se guarda en colección "reportes"
+            modelo.addRow(cita.toTableRow());
+        }
+
 
         // Llenar tabla con las citas
         for (Cita cita : citas) {
@@ -114,24 +126,16 @@ public class MenuAdmin extends JFrame {
 
 
     private void gestionarStock() {
-        // Crear ventana
+        StockDAO stockDAO = new StockDAO();
         JFrame ventanaStock = new JFrame("Gestión de Stock");
         ventanaStock.setSize(700, 500);
         ventanaStock.setLocationRelativeTo(this);
         ventanaStock.setLayout(new BorderLayout());
 
-        // Datos simulados de stock
+        // Tabla y modelo
         String[] columnas = {"ID", "Producto", "Cantidad", "Unidad"};
-        Object[][] datos = {
-                {1, "Vacuna Rabia", 25, "dosis"},
-                {2, "Antiparasitario", 40, "tabletas"},
-                {3, "Jeringas", 100, "unidades"},
-                {4, "Vitaminas", 60, "ml"}
-        };
-
-        DefaultTableModel modelo = new DefaultTableModel(datos, columnas) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+            public boolean isCellEditable(int row, int col) {
                 return false;
             }
         };
@@ -139,25 +143,35 @@ public class MenuAdmin extends JFrame {
         JTable tablaStock = new JTable(modelo);
         JScrollPane scrollPane = new JScrollPane(tablaStock);
 
-        // Panel de botones
+        // Cargar datos desde MongoDB
+        modelo.setRowCount(0);
+        for (Document doc : stockDAO.obtenerStock()) {
+            modelo.addRow(new Object[]{
+                    doc.getObjectId("_id").toHexString(),
+                    doc.getString("producto"),
+                    doc.getInteger("cantidad"),
+                    doc.getString("unidad")
+            });
+        }
+
+        // Botones
         JPanel panelBotones = new JPanel(new FlowLayout());
         JButton btnAgregar = new JButton("Agregar");
-        btnAgregar.setBackground(new java.awt.Color(0, 153, 0)); // Verde
-        btnAgregar.setForeground(java.awt.Color.WHITE);          // Texto blanco
-
+        JButton btnEditar = new JButton("Editar");
         JButton btnEliminar = new JButton("Eliminar");
-        btnEliminar.setBackground(new java.awt.Color(204, 0, 0)); // Rojo
-        btnEliminar.setForeground(java.awt.Color.WHITE);          // Texto blanco
 
-
-        //JButton btnCerrar = new JButton("Cerrar");
-
+        btnAgregar.setBackground(new Color(0, 153, 0));
+        btnAgregar.setForeground(Color.WHITE);
+        btnEliminar.setBackground(new Color(204, 0, 0));
+        btnEliminar.setForeground(Color.WHITE);
+        btnEditar.setBackground(new Color(0, 102, 204));
+        btnEditar.setForeground(Color.WHITE);
 
         panelBotones.add(btnAgregar);
+        panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
-        //panelBotones.add(btnCerrar);
 
-        // Acción botón Agregar
+        // Acción AGREGAR
         btnAgregar.addActionListener(e -> {
             JTextField campoProducto = new JTextField();
             JTextField campoCantidad = new JTextField();
@@ -171,68 +185,103 @@ public class MenuAdmin extends JFrame {
             panel.add(new JLabel("Unidad:"));
             panel.add(campoUnidad);
 
-            int result = JOptionPane.showConfirmDialog(ventanaStock, panel,
-                    "Agregar Producto", JOptionPane.OK_CANCEL_OPTION);
-
-            if (result == JOptionPane.OK_OPTION) {
+            int res = JOptionPane.showConfirmDialog(ventanaStock, panel, "Agregar Producto", JOptionPane.OK_CANCEL_OPTION);
+            if (res == JOptionPane.OK_OPTION) {
                 try {
                     String producto = campoProducto.getText().trim();
                     int cantidad = Integer.parseInt(campoCantidad.getText().trim());
                     String unidad = campoUnidad.getText().trim();
 
-                    if (producto.isEmpty() || unidad.isEmpty()) {
-                        JOptionPane.showMessageDialog(ventanaStock,
-                                "Todos los campos son obligatorios.",
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
+                    if (producto.isEmpty() || unidad.isEmpty()) throw new Exception("Campos vacíos");
+
+                    stockDAO.agregarProducto(producto, cantidad, unidad);
+
+                    modelo.setRowCount(0); // recargar
+                    for (Document doc : stockDAO.obtenerStock()) {
+                        modelo.addRow(new Object[]{
+                                doc.getObjectId("_id").toHexString(),
+                                doc.getString("producto"),
+                                doc.getInteger("cantidad"),
+                                doc.getString("unidad")
+                        });
                     }
 
-                    int idNuevo = modelo.getRowCount() + 1;
-                    modelo.addRow(new Object[]{idNuevo, producto, cantidad, unidad});
-                    JOptionPane.showMessageDialog(ventanaStock,
-                            "Producto agregado correctamente.",
-                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(ventanaStock,
-                            "Cantidad debe ser un número.",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(ventanaStock, "Producto agregado correctamente.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(ventanaStock, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        // Acción botón Eliminar
+        // Acción ELIMINAR
         btnEliminar.addActionListener(e -> {
-            int filaSeleccionada = tablaStock.getSelectedRow();
-            if (filaSeleccionada == -1) {
-                JOptionPane.showMessageDialog(ventanaStock,
-                        "Seleccione un producto para eliminar.",
-                        "Aviso", JOptionPane.WARNING_MESSAGE);
+            int fila = tablaStock.getSelectedRow();
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(ventanaStock, "Seleccione un producto para eliminar.");
                 return;
             }
 
-            int confirmacion = JOptionPane.showConfirmDialog(ventanaStock,
-                    "¿Está seguro que desea eliminar este producto?",
-                    "Confirmar", JOptionPane.YES_NO_OPTION);
+            String id = (String) modelo.getValueAt(fila, 0);
+            int confirm = JOptionPane.showConfirmDialog(ventanaStock, "¿Seguro que desea eliminar este producto?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                stockDAO.eliminarProductoPorId(id);
 
-            if (confirmacion == JOptionPane.YES_OPTION) {
-                modelo.removeRow(filaSeleccionada);
-                JOptionPane.showMessageDialog(ventanaStock,
-                        "Producto eliminado.",
-                        "Eliminado", JOptionPane.INFORMATION_MESSAGE);
+                modelo.removeRow(fila);
+                JOptionPane.showMessageDialog(ventanaStock, "Producto eliminado.");
             }
         });
 
-        // Cerrar ventana
-        //btnCerrar.addActionListener(e -> ventanaStock.dispose());
+        // Acción EDITAR
+        btnEditar.addActionListener(e -> {
+            int fila = tablaStock.getSelectedRow();
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(ventanaStock, "Seleccione un producto para editar.");
+                return;
+            }
 
-        // Componentes a la ventana
+            String id = (String) modelo.getValueAt(fila, 0);
+            String productoActual = (String) modelo.getValueAt(fila, 1);
+            int cantidadActual = (int) modelo.getValueAt(fila, 2);
+            String unidadActual = (String) modelo.getValueAt(fila, 3);
+
+            JTextField campoProducto = new JTextField(productoActual);
+            JTextField campoCantidad = new JTextField(String.valueOf(cantidadActual));
+            JTextField campoUnidad = new JTextField(unidadActual);
+
+            JPanel panel = new JPanel(new GridLayout(3, 2));
+            panel.add(new JLabel("Producto:"));
+            panel.add(campoProducto);
+            panel.add(new JLabel("Cantidad:"));
+            panel.add(campoCantidad);
+            panel.add(new JLabel("Unidad:"));
+            panel.add(campoUnidad);
+
+            int res = JOptionPane.showConfirmDialog(ventanaStock, panel, "Editar Producto", JOptionPane.OK_CANCEL_OPTION);
+            if (res == JOptionPane.OK_OPTION) {
+                try {
+                    String productoNuevo = campoProducto.getText().trim();
+                    int cantidadNueva = Integer.parseInt(campoCantidad.getText().trim());
+                    String unidadNueva = campoUnidad.getText().trim();
+
+                    if (productoNuevo.isEmpty() || unidadNueva.isEmpty()) throw new Exception("Campos vacíos");
+
+                    stockDAO.actualizarProducto(id, productoNuevo, cantidadNueva, unidadNueva);
+
+                    modelo.setValueAt(productoNuevo, fila, 1);
+                    modelo.setValueAt(cantidadNueva, fila, 2);
+                    modelo.setValueAt(unidadNueva, fila, 3);
+
+                    JOptionPane.showMessageDialog(ventanaStock, "Producto actualizado correctamente.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(ventanaStock, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         ventanaStock.add(scrollPane, BorderLayout.CENTER);
         ventanaStock.add(panelBotones, BorderLayout.SOUTH);
-
         ventanaStock.setVisible(true);
     }
-
 
     private void cerrarSesion() {
         int respuesta = JOptionPane.showConfirmDialog(this,

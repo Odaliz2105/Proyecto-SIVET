@@ -2,31 +2,28 @@ package modelo;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import com.toedter.calendar.JDateChooser;
 
 public class Cita {
-    private int id;
+    private String id; // Cambiado de int a String
     private String propietario;
     private String mascota;
     private Date fecha;
     private String hora;
     private String motivo;
-    private String estado; // "Agendada", "Completada", "Cancelada"
-    private static int contadorId = 1;
+    private String estado;
 
-    // Constructor
+    // Constructor sin ID (para nuevas citas)
     public Cita(String propietario, String mascota, Date fecha, String hora, String motivo) {
-        this.id = contadorId++;
         this.propietario = propietario;
         this.mascota = mascota;
         this.fecha = fecha;
         this.hora = hora;
         this.motivo = motivo;
-        this.estado = "Agendada";
+        this.estado = "PENDIENTE";
     }
 
     // Constructor completo (para cargar desde BD)
-    public Cita(int id, String propietario, String mascota, Date fecha, String hora, String motivo, String estado) {
+    public Cita(String id, String propietario, String mascota, Date fecha, String hora, String motivo, String estado) {
         this.id = id;
         this.propietario = propietario;
         this.mascota = mascota;
@@ -37,11 +34,11 @@ public class Cita {
     }
 
     // Getters y Setters
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -93,13 +90,11 @@ public class Cita {
         this.estado = estado;
     }
 
-    // Método para formatear la fecha
     public String getFechaFormateada() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         return sdf.format(fecha);
     }
 
-    // Método toString para mostrar la cita
     @Override
     public String toString() {
         return "Cita #" + id +
@@ -111,7 +106,6 @@ public class Cita {
                 "\nEstado: " + estado;
     }
 
-    // Método para representación en tabla
     public Object[] toTableRow() {
         return new Object[]{
                 id,
@@ -123,5 +117,4 @@ public class Cita {
                 estado
         };
     }
-
 }

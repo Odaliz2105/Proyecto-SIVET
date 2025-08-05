@@ -1,5 +1,7 @@
 package vista;
 
+import dao.CitaDAO;
+import dao.UsuarioDAO;
 import modelo.Cita;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import com.toedter.calendar.JDateChooser;
+import modelo.Usuario;
 
 public class Home extends JFrame {
     private JPanel panelHome;
@@ -27,10 +30,17 @@ public class Home extends JFrame {
     private JPanel panelServicios;
     private JPanel PanelPie;
     private JButton crearUsuarioButton;
+    private JTextField textNombreUsuario;
     private JDateChooser dateChooser; // Para el calendario (JCalendar library)
 
     // Lista estática para almacenar citas (temporal, después será BD)
     public static ArrayList<Cita> listaCitas = new ArrayList<>();
+
+    public void setDatosMascotaDesdeSeleccion(String propietario, String mascota, String especie, String raza, String sexo) {
+        textPropietario.setText(propietario);
+        textMascota.setText(mascota);
+    }
+
 
     public Home() {
         setTitle("VETERINARIA SIVET - Sistema de Gestión");
@@ -51,6 +61,7 @@ public class Home extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String rol = (String) comboBoxUsuario.getSelectedItem();
                 String nuevaContraseña = new String(contraseña.getPassword());
+                String nombre = textNombreUsuario.getText().trim();
 
                 if (rol == null || rol.equals("Seleccionar rol")) {
                     JOptionPane.showMessageDialog(panelHome,
@@ -59,24 +70,40 @@ public class Home extends JFrame {
                     return;
                 }
 
-                if (nuevaContraseña.trim().isEmpty()) {
+                if (nombre.isEmpty()) {
                     JOptionPane.showMessageDialog(panelHome,
-                            "Por favor ingresa una contraseña para el nuevo usuario.",
+                            "Por favor ingresa el nombre del usuario.",
                             "Campo requerido", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                // Aquí puedes almacenar temporalmente el nuevo usuario en una lista, base de datos, o imprimirlo.
-                // Por ahora, solo mostramos un mensaje de confirmación:
-                JOptionPane.showMessageDialog(panelHome,
-                        "¡Usuario creado exitosamente!\n\nRol: " + rol + "\nContraseña: " + nuevaContraseña,
-                        "Usuario creado", JOptionPane.INFORMATION_MESSAGE);
+                if (nuevaContraseña.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(panelHome,
+                            "Por favor ingresa una contraseña.",
+                            "Campo requerido", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
 
-                // Limpiar campos
+                Usuario usuario = new Usuario(nombre, rol, nuevaContraseña);
+                UsuarioDAO usuarioDAO = new UsuarioDAO();
+                boolean creado = usuarioDAO.crearUsuario(usuario);
+
+                if (creado) {
+                    JOptionPane.showMessageDialog(panelHome,
+                            "¡Usuario creado exitosamente!",
+                            "Usuario creado", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(panelHome,
+                            "Ya se alcanzó el límite de usuarios para este rol.",
+                            "Límite alcanzado", JOptionPane.WARNING_MESSAGE);
+                }
+
                 comboBoxUsuario.setSelectedIndex(0);
                 contraseña.setText("");
+                textNombreUsuario.setText("");
             }
         });
+
 
     }
 
@@ -155,6 +182,10 @@ public class Home extends JFrame {
                 // Agregar a la lista
                 listaCitas.add(nuevaCita);
 
+                // Agregar las citas desde el home
+                new CitaDAO().guardarCita(nuevaCita);
+
+
                 // Mostrar mensaje de confirmación
                 JOptionPane.showMessageDialog(this,
                         "¡CITA AGENDADA EXITOSAMENTE!\n\n" +
@@ -224,34 +255,27 @@ public class Home extends JFrame {
         String password = new String(contraseña.getPassword());
 
         if (validarCamposLogin(usuario, password)) {
-            // Credenciales específicas
-            boolean credencialesCorrectas = false;
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            boolean loginExitoso = usuarioDAO.validarCredenciales(usuario, password);
 
-            if (usuario.equals("Administrador") && password.equals("admin123")) {
-                credencialesCorrectas = true;
+            if (loginExitoso) {
+                usuarioDAO = new UsuarioDAO();
+                String nombreUsuario = usuarioDAO.obtenerNombrePorRolYContraseña(usuario, password);
+
                 this.dispose();
-                new MenuAdmin();// Abrir ventana del menú administrador
+                if (usuario.equals("Administrador")) {
+                    new MenuAdmin();
+                } else if (usuario.equals("Asistente Veterinario")) {
+                    new MenuAsistente();
+                }
+
                 JOptionPane.showMessageDialog(null,
-                        "¡Bienvenido Administrador!",
+                        "¡Bienvenido " + nombreUsuario + " (" + usuario + ")!",
                         "Inicio de sesión exitoso",
                         JOptionPane.INFORMATION_MESSAGE);
-
-            } else if (usuario.equals("Asistente Veterinario") && password.equals("asistente123")) {
-                credencialesCorrectas = true;
-                this.dispose();
-                new MenuAsistente(); // Abrir ventana del menú asistente
-                JOptionPane.showMessageDialog(null,
-                        "¡Bienvenido Asistente Veterinario!",
-                        "Inicio de sesión exitoso",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-
-            if (!credencialesCorrectas) {
+            } else {
                 JOptionPane.showMessageDialog(this,
-                        "Credenciales incorrectas.\n\n" +
-                                "Credenciales de prueba:\n" +
-                                "Administrador: admin123\n" +
-                                "Asistente Veterinario: asistente123",
+                        "Credenciales incorrectas.",
                         "Error de autenticación",
                         JOptionPane.ERROR_MESSAGE);
                 contraseña.setText("");
@@ -259,6 +283,7 @@ public class Home extends JFrame {
             }
         }
     }
+
 
     private boolean validarCamposLogin(String usuario, String password) {
         if (usuario == null || usuario.equals("Seleccionar rol")) {

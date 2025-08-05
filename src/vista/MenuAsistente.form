@@ -54,7 +54,7 @@
           </component>
         </children>
       </grid>
-      <grid id="f387b" binding="PanelBotones" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="f387b" binding="PanelBotones" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints border-constraint="West"/>
         <properties>
@@ -86,7 +86,7 @@
           </component>
           <component id="e29ca" class="javax.swing.JButton" binding="cerrarSesionButton" default-binding="true">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <background color="-14072711"/>
@@ -104,6 +104,16 @@
               <font name="Bookman Old Style" size="12" style="1"/>
               <foreground color="-394241"/>
               <text value="Registrar Cita"/>
+            </properties>
+          </component>
+          <component id="b914e" class="javax.swing.JButton" binding="verMascotaButton" default-binding="true">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-14071941"/>
+              <foreground color="-394241"/>
+              <text value="Ver Mascota"/>
             </properties>
           </component>
         </children>
